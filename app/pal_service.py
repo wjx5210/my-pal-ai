@@ -13,15 +13,16 @@ def load_pals() -> list[dict[str, str]]:
 
     return pals
 
-
-def find_pal_by_name(name: str) -> dict[str, str] | None:
-    """根据帕鲁名称进行精确查询。"""
+def find_pals_by_name(name: str) -> list[dict[str, str]]:
+    """根据帕鲁名称查询，返回所有匹配结果。"""
 
     normalized_name = name.strip()
     pals = load_pals()
+    matched_pals = []
 
     for pal in pals:
-        if pal["name"] == normalized_name:
-            return pal
+        if normalized_name in pal["name"]:
+            matched_pals.append(pal)
 
+    return matched_pals
     return None
