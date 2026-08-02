@@ -26,3 +26,16 @@ def find_pals_by_name(name: str) -> list[dict[str, str]]:
 
     return matched_pals
     return None
+
+def find_pals_in_text(text: str) -> list[dict[str, str]]:
+    """从一段自然语言文本中找出被提到的帕鲁。"""
+
+    normalized_text = text.strip()
+    pals = load_pals()
+    mentioned_pals = []
+
+    for pal in pals:
+        if pal["name"] in normalized_text:
+            mentioned_pals.append(pal)
+
+    return mentioned_pals

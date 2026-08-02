@@ -1,7 +1,12 @@
-from app.pal_service import find_pals_by_name
+from app.pal_service import (
+    find_pals_by_name,
+    find_pals_in_text,
+)
+
 from app.ai_service import (
     generate_pal_guide,
-    answer_question
+    answer_question,
+    answer_with_pal_context
 )
 
 def format_pal_info(pal: dict[str, str]) -> str:
@@ -14,15 +19,6 @@ def format_pal_info(pal: dict[str, str]) -> str:
         f"攻略提示：{pal['tips']}"
     )
 
-def is_pal_query(text: str) -> bool:
-    """
-    判断用户输入是否可能是在查询帕鲁。
-    """
-
-    matched_pals = find_pals_by_name(text)
-
-    return len(matched_pals) > 0
-
 def show_ai_guide(pal: dict[str, str]) -> None:
     """调用 AI 生成攻略并显示。"""
 
@@ -32,6 +28,14 @@ def show_ai_guide(pal: dict[str, str]) -> None:
 
     print(guide)
 
+def show_ai_answer(question: str,pal: dict[str, str]) -> None:
+    """根据用户问题和帕鲁资料回答。"""
+
+    print("\n--- AI回答 ---")
+
+    answer = answer_with_pal_context(question,pal)
+
+    print(answer)
 
 def main() -> None:
     """程序入口，支持连续查询和主动退出。"""
@@ -40,20 +44,39 @@ def main() -> None:
     print("输入 exit 退出程序")
 
     while True:
-        pal_name = input("\n请输入帕鲁名称或提问：").strip()
+        user_input = input("\n请输入帕鲁名称或提问：").strip()
 
-        if pal_name.lower() == "exit":
+        if user_input.lower() == "exit":
             print("程序已退出。")
             break
 
-        matched_pals = find_pals_by_name(pal_name)
+        # 第一优先级：
+        # 判断用户问题中是否包含帕鲁名称
+        mentioned_pals = find_pals_in_text(user_input)
+
+        if mentioned_pals:
+            selected_pal = mentioned_pals[0]
+
+            print("\n正在查询相关资料...")
+
+            show_ai_answer(user_input, selected_pal)
+
+            continue
+
+        # 第二优先级：
+        # 判断用户是否直接输入帕鲁名称
+        matched_pals = find_pals_by_name(user_input)
 
         if not matched_pals:
-           answer = answer_question(pal_name)
-           print(answer)
-           continue
+            print("\n--- AI回答 ---")
 
-        # 只有一个结果，直接展示
+            answer = answer_question(user_input)
+
+            print(answer)
+
+            continue
+
+        # 一个匹配结果
         if len(matched_pals) == 1:
             selected_pal = matched_pals[0]
 
@@ -64,7 +87,7 @@ def main() -> None:
 
             continue
 
-        # 多个结果，让用户选择
+        # 多个匹配结果
         print(f"\n找到 {len(matched_pals)} 个结果：")
 
         for index, pal in enumerate(matched_pals, start=1):
@@ -74,6 +97,7 @@ def main() -> None:
 
         try:
             selected_index = int(choice) - 1
+
         except ValueError:
             print("输入无效，请输入数字编号。")
             continue
@@ -88,7 +112,6 @@ def main() -> None:
         print(format_pal_info(selected_pal))
 
         show_ai_guide(selected_pal)
-
 
 if __name__ == "__main__":
     main()
