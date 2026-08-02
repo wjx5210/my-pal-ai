@@ -1,13 +1,14 @@
+from app.ai_service import (
+    answer_question,
+    answer_with_multiple_pal_context,
+    answer_with_pal_context,
+    generate_pal_guide,
+)
 from app.pal_service import (
     find_pals_by_name,
     find_pals_in_text,
 )
 
-from app.ai_service import (
-    generate_pal_guide,
-    answer_question,
-    answer_with_pal_context
-)
 
 def format_pal_info(pal: dict[str, str]) -> str:
     """将帕鲁字典转换成适合终端显示的文本。"""
@@ -19,6 +20,7 @@ def format_pal_info(pal: dict[str, str]) -> str:
         f"攻略提示：{pal['tips']}"
     )
 
+
 def show_ai_guide(pal: dict[str, str]) -> None:
     """调用 AI 生成攻略并显示。"""
 
@@ -28,14 +30,26 @@ def show_ai_guide(pal: dict[str, str]) -> None:
 
     print(guide)
 
-def show_ai_answer(question: str,pal: dict[str, str]) -> None:
+
+def show_ai_answer(question: str, pal: dict[str, str]) -> None:
     """根据用户问题和帕鲁资料回答。"""
 
     print("\n--- AI回答 ---")
 
-    answer = answer_with_pal_context(question,pal)
+    answer = answer_with_pal_context(question, pal)
 
     print(answer)
+
+
+def show_multiple_pal_answer(question: str, pals: list[dict[str, str]]) -> None:
+    """多个帕鲁情况下调用AI回答。"""
+
+    print("\n--- AI回答 ---")
+
+    answer = answer_with_multiple_pal_context(question, pals)
+
+    print(answer)
+
 
 def main() -> None:
     """程序入口，支持连续查询和主动退出。"""
@@ -55,8 +69,11 @@ def main() -> None:
         mentioned_pals = find_pals_in_text(user_input)
 
         if mentioned_pals:
-            selected_pal = mentioned_pals[0]
+            if len(mentioned_pals) > 1:
+                show_multiple_pal_answer(user_input, mentioned_pals)
+                continue
 
+            selected_pal = mentioned_pals[0]
             print("\n正在查询相关资料...")
 
             show_ai_answer(user_input, selected_pal)
@@ -112,6 +129,7 @@ def main() -> None:
         print(format_pal_info(selected_pal))
 
         show_ai_guide(selected_pal)
+
 
 if __name__ == "__main__":
     main()
