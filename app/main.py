@@ -9,8 +9,10 @@ from app.pal_service import (
     find_pals_in_text,
 )
 from app.intent_service import classify_intent
-from app.context_service import select_context_by_intent
-
+from app.context_service import (
+    select_context_by_intent,
+    select_multiple_context_by_intent,
+)
 
 def format_pal_display(pal: dict[str, str]) -> str:
     """将帕鲁字典转换成适合终端显示的文本。"""
@@ -62,12 +64,34 @@ def show_ai_answer(question: str, pal: dict[str, str]) -> None:
     print(answer)
 
 
-def show_multiple_pal_answer(question: str, pals: list[dict[str, str]]) -> None:
+def show_multiple_pal_answer(
+    question: str,
+    pals: list[dict[str, str]]
+) -> None:
     """多个帕鲁情况下调用AI回答。"""
 
     print("\n--- AI回答 ---")
 
-    answer = answer_with_multiple_pal_context(question, pals)
+
+    # 第一步：判断用户意图
+    intent = classify_intent(question)
+
+    print(f"识别问题类型：{intent}")
+
+
+    # 第二步：根据意图筛选多个帕鲁资料
+    contexts = select_multiple_context_by_intent(
+        intent,
+        pals
+    )
+
+
+    # 第三步：生成比较回答
+    answer = answer_with_multiple_pal_context(
+        question,
+        contexts
+    )
+
 
     print(answer)
 
@@ -119,7 +143,7 @@ def main() -> None:
             selected_pal = matched_pals[0]
 
             print("\n查询成功")
-            print(format_pal_info(selected_pal))
+            print(format_pal_display(selected_pal))
 
             show_ai_guide(selected_pal)
 
@@ -147,7 +171,7 @@ def main() -> None:
         selected_pal = matched_pals[selected_index]
 
         print("\n查询成功")
-        print(format_pal_info(selected_pal))
+        print(format_pal_display(selected_pal))
 
         show_ai_guide(selected_pal)
 

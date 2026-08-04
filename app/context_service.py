@@ -1,4 +1,5 @@
 def select_context_by_intent(intent: str, pal: dict) -> dict:
+
     """
     根据意图选择需要提供给AI的资料。
     """
@@ -44,3 +45,51 @@ def select_context_by_intent(intent: str, pal: dict) -> dict:
 
 
     return context
+
+
+def select_multiple_context_by_intent(intent: str,pals: list[dict]) -> list[dict]:
+    """
+    根据意图筛选多个帕鲁资料。
+    """
+
+    contexts = []
+
+
+    for pal in pals:
+
+        context = {
+            "name": pal["name"]
+        }
+
+
+        if intent == "compare":
+
+            context["element"] = pal.get(
+                "element",
+                []
+            )
+
+            context["combat"] = pal.get(
+                "combat",
+                {}
+            )
+
+            context["work_suitability"] = pal.get(
+                "work_suitability",
+                {}
+            )
+
+            context["recommendation"] = pal.get(
+                "recommendation",
+                ""
+            )
+
+
+        else:
+            context = pal
+
+
+        contexts.append(context)
+
+
+    return contexts
