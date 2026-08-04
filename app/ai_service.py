@@ -72,6 +72,39 @@ def answer_question(question: str) -> str:
     return response.choices[0].message.content
 
 
+def select_pal_context(question: str, pal: dict) -> dict:
+    """
+    根据用户问题选择需要提供给AI的资料。
+    """
+
+    context = {
+        "name": pal["name"]
+    }
+
+    if "哪里" in question or "地点" in question or "抓" in question:
+        context["locations"] = pal["locations"]
+        context["element"] = pal["element"]
+
+
+    elif "培养" in question or "值得" in question or "推荐" in question:
+        context["recommended_stage"] = pal["recommended_stage"]
+        context["recommendation"] = pal["recommendation"]
+        context["combat"] = pal["combat"]
+        context["work_suitability"] = pal["work_suitability"]
+
+
+    elif "掉落" in question or "材料" in question:
+        context["drops"] = pal["drops"]
+
+
+    else:
+        # 默认返回完整资料
+        return pal
+
+
+    return context
+
+
 def format_pal_info(pal: dict) -> str:
     """
     将帕鲁字典格式化成AI容易理解的文本。
@@ -82,28 +115,28 @@ def format_pal_info(pal: dict) -> str:
 属性：{', '.join(pal['element'])}
 
 简介：
-{pal['summary']}
+{pal.get('summary', '暂无资料')}
 
 工作能力：
-{pal['work_suitability']}
+{pal.get('work_suitability', '暂无资料')}
 
 战斗能力：
-{pal['combat']}
+{pal.get('combat', '暂无资料')}
 
 掉落物：
-{', '.join(pal['drops'])}
+{', '.join(pal.get('drops', ['暂无资料']))}
 
 出现地点：
-{', '.join(pal['locations'])}
+{', '.join(pal.get('locations', ['暂无资料']))}
 
 推荐阶段：
-{pal['recommended_stage']}
+{pal.get('recommended_stage', '暂无资料')}
 
 推荐理由：
-{pal['recommendation']}
+{pal.get('recommendation', '暂无资料')}
 
 攻略提示：
-{pal['tips']}
+{pal.get('tips', '暂无资料')}
 """
 
     return text
@@ -120,7 +153,7 @@ def answer_with_pal_context(question: str, pal_info: dict[str, str]) -> str:
 
 参考帕鲁资料：
 
-{format_pal_info(pal_info)}
+{format_pal_info(select_pal_context(question, pal_info))}
 
 要求：
 1. 使用中文回答。
