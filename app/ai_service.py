@@ -72,6 +72,43 @@ def answer_question(question: str) -> str:
     return response.choices[0].message.content
 
 
+def format_pal_info(pal: dict) -> str:
+    """
+    将帕鲁字典格式化成AI容易理解的文本。
+    """
+
+    text = f"""
+名称：{pal['name']}
+属性：{', '.join(pal['element'])}
+
+简介：
+{pal['summary']}
+
+工作能力：
+{pal['work_suitability']}
+
+战斗能力：
+{pal['combat']}
+
+掉落物：
+{', '.join(pal['drops'])}
+
+出现地点：
+{', '.join(pal['locations'])}
+
+推荐阶段：
+{pal['recommended_stage']}
+
+推荐理由：
+{pal['recommendation']}
+
+攻略提示：
+{pal['tips']}
+"""
+
+    return text
+
+
 def answer_with_pal_context(question: str, pal_info: dict[str, str]) -> str:
     """根据用户问题和帕鲁资料生成回答。"""
 
@@ -83,10 +120,7 @@ def answer_with_pal_context(question: str, pal_info: dict[str, str]) -> str:
 
 参考帕鲁资料：
 
-名称：{pal_info['name']}
-属性：{pal_info['element']}
-简介：{pal_info['summary']}
-攻略提示：{pal_info['tips']}
+{format_pal_info(pal_info)}
 
 要求：
 1. 使用中文回答。
@@ -115,10 +149,7 @@ def answer_with_multiple_pal_context(question: str, pals: list[dict[str, str]]) 
         pal_text += f"""
 帕鲁{index}：
 
-名称：{pal['name']}
-属性：{pal['element']}
-简介：{pal['summary']}
-攻略提示：{pal['tips']}
+{format_pal_info(pal)}
 
 """
 

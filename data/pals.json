@@ -1,32 +1,93 @@
 [
   {
     "name": "棉悠悠",
-    "element": "无属性",
+    "element": ["无属性"],
     "summary": "性格温顺，外形像一只覆盖着羊毛的小羊帕鲁。",
+    "work_suitability": {
+      "采集": 1,
+      "牧场": 1
+    },
+    "combat": {
+      "positioning": "前期辅助型帕鲁",
+      "strengths": ["容易获得", "适合前期过渡"],
+      "weaknesses": ["战斗输出能力有限"]
+    },
+    "drops": ["羊毛"],
+    "locations": ["初始区域附近"],
+    "recommended_stage": "前期",
+    "recommendation": "容易遇到和捕捉，可以在前期提供基础资源，但不适合作为长期主力战斗帕鲁。",
     "tips": "适合作为前期容易遇到的帕鲁。"
   },
   {
     "name": "企丸丸",
-    "element": "水属性、冰属性",
+    "element": ["水属性", "冰属性"],
     "summary": "外形类似企鹅，能够使用水属性和冰属性能力。",
+    "work_suitability": {
+      "浇水": 1,
+      "冷却": 1,
+      "搬运": 1,
+      "手工作业": 1
+    },
+    "combat": {
+      "positioning": "前期多用途帕鲁",
+      "strengths": ["属性类型较丰富", "基地工作种类较多"],
+      "weaknesses": ["各项工作能力等级较低"]
+    },
+    "drops": ["帕鲁的体液", "结冰器官"],
+    "locations": ["初始区域附近"],
+    "recommended_stage": "前期",
+    "recommendation": "适合前期补充基地工作岗位，也可以用于水属性和冰属性相关需求。",
     "tips": "可以用于测试输入“企丸”或“丸丸”时的部分名称查询。"
   },
   {
     "name": "皮皮鸡",
-    "element": "无属性",
+    "element": ["无属性"],
     "summary": "外形类似小鸡，是一种较为常见的帕鲁。",
+    "work_suitability": {
+      "采集": 1,
+      "牧场": 1
+    },
+    "combat": {
+      "positioning": "资源生产型帕鲁",
+      "strengths": ["容易获得", "可以参与牧场生产"],
+      "weaknesses": ["战斗能力较弱"]
+    },
+    "drops": ["蛋"],
+    "locations": ["初始区域附近"],
+    "recommended_stage": "前期",
+    "recommendation": "更适合用于基地资源生产，而不是作为战斗主力培养。",
     "tips": "可以用于测试输入“皮”时的部分名称查询。"
   },
   {
     "name": "冰棘兽",
-    "element": "冰属性",
-    "summary": "用于测试多个查询结果的演示数据。",
+    "element": ["冰属性"],
+    "summary": "当前主要用于测试多个查询结果的数据。",
+    "work_suitability": {},
+    "combat": {
+      "positioning": "待补充",
+      "strengths": [],
+      "weaknesses": []
+    },
+    "drops": [],
+    "locations": [],
+    "recommended_stage": "待补充",
+    "recommendation": "当前为测试数据，详细攻略资料待补充。",
     "tips": "测试完成后可以保留或删除。"
   },
   {
     "name": "冰帝美露帕",
-    "element": "冰属性",
-    "summary": "用于测试多个查询结果的演示数据。",
+    "element": ["冰属性"],
+    "summary": "当前主要用于测试多个查询结果的数据。",
+    "work_suitability": {},
+    "combat": {
+      "positioning": "待补充",
+      "strengths": [],
+      "weaknesses": []
+    },
+    "drops": [],
+    "locations": [],
+    "recommended_stage": "待补充",
+    "recommendation": "当前为测试数据，详细攻略资料待补充。",
     "tips": "输入“冰”时应与冰棘兽一起返回。"
   }
 ]
