@@ -1,4 +1,4 @@
-from app.ai_service import (
+from app.ai_service import (  # noqa: I001
     answer_question,
     answer_with_multiple_pal_context,
     answer_with_pal_context,
@@ -8,9 +8,11 @@ from app.pal_service import (
     find_pals_by_name,
     find_pals_in_text,
 )
+from app.intent_service import classify_intent
+from app.context_service import select_context_by_intent
 
 
-def format_pal_info(pal: dict[str, str]) -> str:
+def format_pal_display(pal: dict[str, str]) -> str:
     """将帕鲁字典转换成适合终端显示的文本。"""
 
     return (
@@ -32,11 +34,30 @@ def show_ai_guide(pal: dict[str, str]) -> None:
 
 
 def show_ai_answer(question: str, pal: dict[str, str]) -> None:
-    """根据用户问题和帕鲁资料回答。"""
+    """根据用户问题、意图和相关资料回答。"""
 
     print("\n--- AI回答 ---")
 
-    answer = answer_with_pal_context(question, pal)
+
+    # 第一步：让AI判断用户意图
+    intent = classify_intent(question)
+
+    print(f"识别问题类型：{intent}")
+
+
+    # 第二步：根据意图筛选资料
+    context = select_context_by_intent(
+        intent,
+        pal
+    )
+
+
+    # 第三步：使用筛选后的资料回答
+    answer = answer_with_pal_context(
+        question,
+        context
+    )
+
 
     print(answer)
 
