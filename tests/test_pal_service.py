@@ -12,3 +12,11 @@ def test_find_pal_by_name():
     assert len(result) > 0
 
     assert result[0]["name"] == "棉悠悠"
+
+
+def test_find_unknown_pal():
+
+    result = find_pals_by_name("不存在的帕鲁")
+
+
+    assert result == []
