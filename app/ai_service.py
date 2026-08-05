@@ -1,21 +1,4 @@
-import os
-
-from dotenv import load_dotenv
-from openai import OpenAI
-
-load_dotenv()
-
-API_KEY = os.getenv("DEEPSEEK_API_KEY")
-BASE_URL = "https://api.deepseek.com"
-MODEL_NAME = "deepseek-v4-flash"
-
-if not API_KEY:
-    raise RuntimeError("没有读取到 DEEPSEEK_API_KEY，请检查项目根目录中的 .env 文件。")
-
-client = OpenAI(
-    api_key=API_KEY,
-    base_url=BASE_URL,
-)
+from app.llm_client import client, MODEL_NAME
 
 
 def generate_pal_guide(pal_info: dict[str, str]) -> str:
