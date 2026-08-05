@@ -1,17 +1,29 @@
-from app.intent_service import classify_intent
-
-questions = [
-    "棉悠悠在哪里抓",
-    "棉悠悠值得培养吗",
-    "企丸丸有什么工作能力",
-    "棉悠悠掉什么材料",
-    "棉悠悠和企丸丸哪个好"
-]
+from app import intent_service
 
 
-for q in questions:
-    result = classify_intent(q)
+def test_classify_intent_compare(monkeypatch):
+    """
+    测试比较类问题的意图识别。
+    """
 
-    print(q)
-    print("意图:", result)
-    print("----------------")
+    def fake_chat_completion(messages):
+        return "compare"
+
+
+    monkeypatch.setattr(
+        intent_service,
+        "chat_completion",
+        fake_chat_completion
+    )
+
+
+    result = intent_service.classify_intent(
+        "棉悠悠和企丸丸哪个好"
+    )
+
+
+    assert result == "compare"
+
+
+def fake_chat_completion(messages):
+    return "compare"
