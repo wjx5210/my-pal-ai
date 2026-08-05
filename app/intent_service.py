@@ -1,4 +1,5 @@
 from app.llm_client import client, MODEL_NAME
+from app.llm_client import chat_completion
 
 
 VALID_INTENTS = {
@@ -63,19 +64,16 @@ other:
 不要解释。
 """
 
-    response = client.chat.completions.create(
-        model=MODEL_NAME,
-        messages=[
-            {
-                "role": "system",
-                "content": "你负责准确分类用户问题。"
-            },
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ]
-    )
-    raw_intent = response.choices[0].message.content
-
+    raw_intent = chat_completion(
+    [
+        {
+            "role": "system",
+            "content": "你负责准确分类用户问题。"
+        },
+        {
+            "role": "user",
+            "content": prompt
+        }
+    ]
+)
     return validate_intent(raw_intent)

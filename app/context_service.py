@@ -47,13 +47,15 @@ def select_context_by_intent(intent: str, pal: dict) -> dict:
     return context
 
 
-def select_multiple_context_by_intent(intent: str,pals: list[dict]) -> list[dict]:
+def select_multiple_context_by_intent(
+    intent: str,
+    pals: list[dict]
+) -> list[dict]:
     """
     根据意图筛选多个帕鲁资料。
     """
 
     contexts = []
-
 
     for pal in pals:
 
@@ -79,11 +81,30 @@ def select_multiple_context_by_intent(intent: str,pals: list[dict]) -> list[dict
                 {}
             )
 
+            context["locations"] = pal.get(
+                "locations",
+                []
+            )
+
+            context["drops"] = pal.get(
+                "drops",
+                []
+            )
+
+            context["recommended_stage"] = pal.get(
+                "recommended_stage",
+                ""
+            )
+
             context["recommendation"] = pal.get(
                 "recommendation",
                 ""
             )
 
+            context["tips"] = pal.get(
+                "tips",
+                ""
+            )
 
         else:
             context = pal

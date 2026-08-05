@@ -1,4 +1,5 @@
-from app.llm_client import client, MODEL_NAME
+from app.llm_client import chat_completion, MODEL_NAME
+from app.llm_client import chat_completion
 
 
 def generate_pal_guide(pal_info: dict[str, str]) -> str:
@@ -20,39 +21,50 @@ def generate_pal_guide(pal_info: dict[str, str]) -> str:
 2. 不要编造资料中没有的信息。
 3. 用简洁的攻略风格介绍这只帕鲁。
 """
-
-    response = client.chat.completions.create(
-        model=MODEL_NAME,
-        messages=[
-            {"role": "system", "content": "你是一个专业的游戏攻略助手。"},
-            {"role": "user", "content": prompt},
-        ],
-    )
-
-    return response.choices[0].message.content
+    return chat_completion(
+    [
+        {
+            "role": "system",
+            "content": "你是一个专业的游戏攻略助手。"
+        },
+        {
+            "role": "user",
+            "content": prompt
+        }
+    ]
+)
 
 
 def answer_question(question: str) -> str:
-    """回答用户提出的自然语言问题。"""
+    """
+    回答用户提出的自然语言问题。
+    """
 
-    response = client.chat.completions.create(
-        model=MODEL_NAME,
-        messages=[
-            {
-                "role": "system",
-                "content": """
+    prompt = f"""
 你是一名《幻兽帕鲁》攻略助手。
 
-请使用中文回答。
-如果不知道答案，请明确说明不知道。
-不要编造不存在的信息。
-""",
-            },
-            {"role": "user", "content": question},
-        ],
-    )
+用户问题：
+{question}
 
-    return response.choices[0].message.content
+要求：
+1. 使用中文回答。
+2. 如果不知道，请明确说明。
+3. 不要编造不存在的信息。
+"""
+
+
+    return chat_completion(
+        [
+            {
+                "role": "system",
+                "content": "你是一个专业的游戏攻略助手。"
+            },
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ]
+    )
 
 
 def format_pal_prompt(pal: dict) -> str:
@@ -113,15 +125,18 @@ def answer_with_pal_context(question: str, pal_info: dict[str, str]) -> str:
 4. 针对用户的问题回答，不要只介绍帕鲁。
 """
 
-    response = client.chat.completions.create(
-        model=MODEL_NAME,
-        messages=[
-            {"role": "system", "content": "你是一个专业的游戏攻略助手。"},
-            {"role": "user", "content": prompt},
-        ],
-    )
-
-    return response.choices[0].message.content
+    return chat_completion(
+    [
+        {
+            "role": "system",
+            "content": "你是一个专业的游戏攻略助手。"
+        },
+        {
+            "role": "user",
+            "content": prompt
+        }
+    ]
+)
 
 
 def answer_with_multiple_pal_context(question: str, pals: list[dict[str, str]]) -> str:
@@ -154,12 +169,15 @@ def answer_with_multiple_pal_context(question: str, pals: list[dict[str, str]]) 
 4. 用户如果是在比较帕鲁，请给出明确建议。
 """
 
-    response = client.chat.completions.create(
-        model=MODEL_NAME,
-        messages=[
-            {"role": "system", "content": "你是专业游戏攻略助手。"},
-            {"role": "user", "content": prompt},
-        ],
-    )
-
-    return response.choices[0].message.content
+    return chat_completion(
+    [
+        {
+            "role": "system",
+            "content": "你是一个专业的游戏攻略助手。"
+        },
+        {
+            "role": "user",
+            "content": prompt
+        }
+    ]
+)
