@@ -123,7 +123,8 @@ my-pal-ai/
 ├─ tests/
 │  ├─ test_pal_service.py
 │  ├─ test_context.py
-│  └─ test_intent.py
+│  ├─ test_intent.py
+|  └─ test_llm_client.py
 ├─ pytest.ini
 ├─ requirements.txt
 └─ README.md
@@ -167,7 +168,7 @@ python -m pytest -q
 - 非比较场景的多帕鲁上下文处理
 - 使用 mock 隔离真实 API 的意图分类测试
 
-当前测试结果：`5 passed`。
+当前测试结果：`6 passed`。
 
 ## Git 演进记录
 

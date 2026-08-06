@@ -1,14 +1,23 @@
 import json
 from pathlib import Path
+from app.data_validator import validate_pal_data
 
 DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "pals.json"
 
 
-def load_pals() -> list[dict[str, str]]:
-    """读取本地帕鲁数据。"""
+def load_pals():
 
-    with DATA_FILE.open("r", encoding="utf-8") as file:
-        pals = json.load(file)
+    with open(
+        "data/pals.json",
+        "r",
+        encoding="utf-8"
+    ) as f:
+
+        pals = json.load(f)
+
+
+    validate_pal_data(pals)
+
 
     return pals
 
