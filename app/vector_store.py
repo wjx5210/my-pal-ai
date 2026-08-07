@@ -50,11 +50,12 @@ class VectorStore:
             }
         )
 
-    
+
     def search(
         self,
         query_vector: list[float],
-        top_k: int = 3
+        top_k: int = 3,
+        threshold: float = 0.0
     ):
 
         results = []
@@ -67,16 +68,18 @@ class VectorStore:
                 doc["vector"]
             )
 
-            results.append(
-                {
-                    "text": doc["text"],
-                    "score": score
-                }
-            )
+            if score >= threshold:
+
+                results.append(
+                    {
+                        "text": doc["text"],
+                        "score": score
+                    }
+                )
 
 
         results.sort(
-            key=lambda x:x["score"],
+            key=lambda x: x["score"],
             reverse=True
         )
 

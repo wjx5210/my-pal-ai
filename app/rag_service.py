@@ -28,7 +28,8 @@ def retrieve_context(
 
     results = store.search(
         query_vector,
-        top_k
+        top_k=top_k,
+        threshold=0.7
     )
 
 

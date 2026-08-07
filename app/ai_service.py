@@ -71,6 +71,12 @@ def answer_with_rag_context(question: str,contexts: list[str]) -> str:
     """
     根据RAG检索出的知识生成回答。
     """
+    if not contexts:
+        return (
+            "抱歉，当前知识库中没有找到"
+            "与该问题相关的资料。"
+            "请尝试询问《幻兽帕鲁》相关攻略问题。"
+        )
 
     knowledge = "\n\n".join(
         contexts
