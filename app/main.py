@@ -132,9 +132,9 @@ def show_multiple_pal_answer(question: str,pals: list[dict[str, str]]) -> None:
 
 
 def show_rag_answer(question: str) -> None:
-    """根据RAG检索结果回答。"""
+    """使用RAG检索知识后回答。"""
 
-    print("\n--- RAG检索 ---")
+    print("\n正在查询相关攻略...")
 
 
     contexts = retrieve_context(
@@ -143,16 +143,12 @@ def show_rag_answer(question: str) -> None:
     )
 
 
-    for index, context in enumerate(contexts, start=1):
-        print(f"\n相关资料 {index}:")
-        print(context)
-
-
     print("\n--- AI回答 ---")
 
 
-    answer = answer_question(
-        question
+    answer = answer_with_rag_context(
+        question,
+        contexts
     )
 
 
