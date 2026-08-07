@@ -2,6 +2,7 @@ from app.ai_service import (
     answer_question,
     answer_with_multiple_pal_context,
     answer_with_pal_context,
+    answer_with_rag_context,
     generate_pal_guide,
 )
 from app.pal_service import (
@@ -13,6 +14,8 @@ from app.context_service import (
     select_context_by_intent,
     select_multiple_context_by_intent,
 )
+from app.rag_service import retrieve_context
+
 
 def format_pal_display(pal: dict[str, str]) -> str:
     """将帕鲁字典转换成适合终端显示的文本。"""
@@ -64,10 +67,7 @@ def show_ai_answer(question: str, pal: dict[str, str]) -> None:
     print(answer)
 
 
-def show_multiple_pal_answer(
-    question: str,
-    pals: list[dict[str, str]]
-) -> None:
+def show_multiple_pal_answer(question: str,pals: list[dict[str, str]]) -> None:
     """多个帕鲁情况下调用AI回答。"""
 
     print("\n--- AI回答 ---")
@@ -90,6 +90,69 @@ def show_multiple_pal_answer(
     answer = answer_with_multiple_pal_context(
         question,
         contexts
+    )
+
+
+    print(answer)
+
+
+
+    """使用RAG检索知识后回答。"""
+
+    print("\n--- RAG检索 ---")
+
+
+    contexts = retrieve_context(
+        question,
+        top_k=3
+    )
+
+
+    for index, context in enumerate(
+        contexts,
+        start=1
+    ):
+        print(
+            f"\n相关资料 {index}:"
+        )
+
+        print(context)
+
+
+    print("\n--- AI回答 ---")
+
+
+    answer = answer_with_rag_context(
+        question,
+        contexts
+    )
+
+
+    print(answer)
+
+
+def show_rag_answer(question: str) -> None:
+    """根据RAG检索结果回答。"""
+
+    print("\n--- RAG检索 ---")
+
+
+    contexts = retrieve_context(
+        question,
+        top_k=3
+    )
+
+
+    for index, context in enumerate(contexts, start=1):
+        print(f"\n相关资料 {index}:")
+        print(context)
+
+
+    print("\n--- AI回答 ---")
+
+
+    answer = answer_question(
+        question
     )
 
 
@@ -130,12 +193,10 @@ def main() -> None:
         matched_pals = find_pals_by_name(user_input)
 
         if not matched_pals:
-            print("\n--- AI回答 ---")
-
-            answer = answer_question(user_input)
-
-            print(answer)
-
+            show_rag_answer(
+                user_input
+                )
+            
             continue
 
         # 一个匹配结果

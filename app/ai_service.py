@@ -67,6 +67,53 @@ def answer_question(question: str) -> str:
     )
 
 
+def answer_with_rag_context(question: str,contexts: list[str]) -> str:
+    """
+    根据RAG检索出的知识生成回答。
+    """
+
+    knowledge = "\n\n".join(
+        contexts
+    )
+
+
+    prompt = f"""
+你是一名《幻兽帕鲁》攻略助手。
+
+用户问题：
+
+{question}
+
+
+以下是从知识库检索出的相关资料：
+
+{knowledge}
+
+
+要求：
+
+1. 使用中文回答。
+2. 优先根据知识库资料回答。
+3. 不要编造资料中不存在的信息。
+4. 如果资料不足，请明确说明。
+5. 针对用户问题回答，不要简单重复资料。
+"""
+
+
+    return chat_completion(
+        [
+            {
+                "role": "system",
+                "content": "你是一个专业的游戏攻略助手。"
+            },
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ]
+    )
+
+
 def format_pal_prompt(pal: dict) -> str:
     """
     将帕鲁字典格式化成AI容易理解的文本。
