@@ -1,6 +1,8 @@
+import pytest
 from app.ai_service import answer_with_pal_context
 
 
+@pytest.mark.ai
 def test_pal_answer_contains_key_info():
 
     pal = {
