@@ -1,3 +1,4 @@
+import json
 from app.embedding_service import create_embedding
 from app.vector_store import VectorStore
 

@@ -1,4 +1,5 @@
 import math
+import json
 
 
 def cosine_similarity(
@@ -81,3 +82,42 @@ class VectorStore:
 
 
         return results[:top_k]
+
+    
+    def save(self, path: str):
+
+        with open(
+            path,
+            "w",
+            encoding="utf-8"
+        ) as f:
+
+            json.dump(
+                self.documents,
+                f,
+                ensure_ascii=False,
+                indent=2
+            )
+
+
+    @classmethod
+    def load(
+        cls,
+        path: str
+    ):
+
+        with open(
+            path,
+            "r",
+            encoding="utf-8"
+        ) as f:
+
+            documents = json.load(f)
+
+
+        store = cls()
+
+        store.documents = documents
+
+
+        return store
