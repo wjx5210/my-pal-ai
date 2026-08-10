@@ -15,8 +15,12 @@ def test_main_qa_flow():
         "builtins.input",
         side_effect=lambda _: next(inputs)
     ), patch(
-        "app.main.answer",
-        return_value="推荐培养棉悠悠"
+        "app.main.answer_with_debug",
+        return_value={
+            "answer": "推荐培养棉悠悠",
+            "context": {},
+            "retrieval": {}
+        }
     ) as mock_answer:
 
 

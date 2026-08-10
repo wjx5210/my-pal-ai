@@ -18,3 +18,25 @@ def answer(question: str) -> str:
     )
 
     return response
+
+
+def answer_with_debug(question: str) -> dict:
+    """
+    调试模式问答入口。
+    返回AI回答以及检索上下文。
+    """
+
+    result = hybrid_search(question)
+
+    context = build_hybrid_context(result)
+
+    response = answer_with_hybrid_context(
+        question,
+        context
+    )
+
+    return {
+        "answer": response,
+        "retrieval": result,
+        "context": context
+    }

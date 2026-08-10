@@ -1,0 +1,4 @@
+DEBUG_RETRIEVAL = True
+
+# 是否保存AI请求日志
+ENABLE_PROMPT_LOG = True

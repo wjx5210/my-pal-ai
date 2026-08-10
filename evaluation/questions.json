@@ -1,0 +1,21 @@
+[
+    {
+        "question": "棉悠悠和企丸丸哪个好",
+        "expected_keywords": [
+            "企丸丸"
+        ]
+    },
+    {
+        "question": "新手前期基地抓什么帕鲁",
+        "expected_keywords": [
+            "捣蛋猫"
+        ]
+    },
+    {
+        "question": "棉悠悠有什么作用",
+        "expected_keywords": [
+            "牧场",
+            "羊毛"
+        ]
+    }
+]

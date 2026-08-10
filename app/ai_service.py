@@ -1,5 +1,6 @@
 from app.llm_client import chat_completion, MODEL_NAME
-from app.llm_client import chat_completion
+from app.logger_service import save_qa_log
+from app.config import ENABLE_PROMPT_LOG
 
 
 def generate_pal_guide(pal_info: dict[str, str]) -> str:
@@ -271,18 +272,7 @@ def answer_with_hybrid_context(question: str,context: dict) -> str:
 
     for pal in context["entities"]:
         entity_text += f"""
-
-名称：
-{pal.get('name')}
-
-属性：
-{pal.get('element')}
-
-简介：
-{pal.get('summary')}
-
-攻略：
-{pal.get('tips')}
+{format_pal_prompt(pal)}
 
 """
 
@@ -322,7 +312,7 @@ def answer_with_hybrid_context(question: str,context: dict) -> str:
 """
 
 
-    return chat_completion(
+    answer = chat_completion(
         [
             {
                 "role": "system",
@@ -334,3 +324,13 @@ def answer_with_hybrid_context(question: str,context: dict) -> str:
             }
         ]
     )
+    if ENABLE_PROMPT_LOG:
+
+        save_qa_log(
+            question,
+            prompt,
+            answer
+        )
+
+
+    return answer
