@@ -41,12 +41,14 @@ class VectorStore:
     def add_document(
         self,
         text: str,
-        vector: list[float]
+        vector: list[float],
+        metadata: dict | None = None
     ):
         self.documents.append(
             {
                 "text": text,
-                "vector": vector
+                "vector": vector,
+                "metadata": metadata or {}
             }
         )
 
@@ -73,7 +75,11 @@ class VectorStore:
                 results.append(
                     {
                         "text": doc["text"],
-                        "score": score
+                        "score": score,
+                        "metadata": doc.get(
+                            "metadata",
+                            {}
+                        )
                     }
                 )
 

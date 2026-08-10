@@ -33,7 +33,4 @@ def retrieve_context(
     )
 
 
-    return [
-        item["text"]
-        for item in results
-    ]
+    return results

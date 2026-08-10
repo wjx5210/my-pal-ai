@@ -79,9 +79,25 @@ def answer_with_rag_context(question: str,contexts: list[str]) -> str:
         )
 
     knowledge = "\n\n".join(
-        contexts
+        [
+            item["text"]
+            for item in contexts
+        ]
     )
 
+    sources = []
+
+    for item in contexts:
+
+        name = item.get(
+            "metadata",
+            {}
+        ).get(
+            "name"
+        )
+
+        if name:
+            sources.append(name)
 
     prompt = f"""
 你是一名《幻兽帕鲁》攻略助手。
@@ -106,7 +122,7 @@ def answer_with_rag_context(question: str,contexts: list[str]) -> str:
 """
 
 
-    return chat_completion(
+    answer = chat_completion(
         [
             {
                 "role": "system",
@@ -118,6 +134,15 @@ def answer_with_rag_context(question: str,contexts: list[str]) -> str:
             }
         ]
     )
+    if sources:
+
+        answer += "\n\n参考资料：\n"
+
+        for source in sources:
+
+            answer += f"- {source}\n"
+
+    return answer
 
 
 def format_pal_prompt(pal: dict) -> str:

@@ -1,4 +1,3 @@
-import json
 from app.embedding_service import create_embedding
 from app.vector_store import VectorStore
 
@@ -73,7 +72,12 @@ def build_vector_store(
 
         store.add_document(
             text,
-            vector
+            vector,
+            {
+                "name": pal["name"],
+                "element": pal["element"],
+                "recommended_stage": pal["recommended_stage"]
+            }
         )
 
 

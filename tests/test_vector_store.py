@@ -42,3 +42,7 @@ def test_vector_search():
         "火绒狐适合作为火属性战斗帕鲁"
     ]
     )
+    assert (
+    "metadata"
+    in store.documents[0]
+    )
