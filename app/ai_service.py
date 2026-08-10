@@ -259,3 +259,78 @@ def answer_with_multiple_pal_context(question: str, pals: list[dict[str, str]]) 
         }
     ]
 )
+
+
+def answer_with_hybrid_context(question: str,context: dict) -> str:
+    """
+    根据Hybrid检索结果生成回答。
+    """
+
+    entity_text = ""
+
+
+    for pal in context["entities"]:
+        entity_text += f"""
+
+名称：
+{pal.get('name')}
+
+属性：
+{pal.get('element')}
+
+简介：
+{pal.get('summary')}
+
+攻略：
+{pal.get('tips')}
+
+"""
+
+
+    knowledge_text = "\n\n".join(
+        context["knowledge"]
+    )
+
+
+    prompt = f"""
+你是一名《幻兽帕鲁》攻略助手。
+
+用户问题：
+
+{question}
+
+
+以下是相关帕鲁资料：
+
+{entity_text}
+
+
+以下是知识库资料：
+
+{knowledge_text}
+
+
+回答要求：
+
+1. 使用中文回答。
+2. 优先根据提供资料分析。
+3. 不要编造资料中不存在的信息。
+4. 如果资料不足，请明确说明。
+5. 如果用户是在比较帕鲁，请给出明确建议。
+6. 如果用户要求比较多个帕鲁，请从多个角度分析差异。
+7. 即使资料不完整，也可以基于已有资料给出有限条件下的推荐，不要简单拒绝判断。
+"""
+
+
+    return chat_completion(
+        [
+            {
+                "role": "system",
+                "content": "你是一个专业的游戏攻略助手。"
+            },
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ]
+    )

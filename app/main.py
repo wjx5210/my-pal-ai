@@ -4,6 +4,7 @@ from app.ai_service import (
     answer_with_pal_context,
     answer_with_rag_context,
     generate_pal_guide,
+    answer_with_hybrid_context,
 )
 from app.pal_service import (
     find_pals_by_name,
@@ -15,6 +16,8 @@ from app.context_service import (
     select_multiple_context_by_intent,
 )
 from app.rag_service import retrieve_context
+from app.hybrid_service import hybrid_search
+from app.context_builder import build_hybrid_context
 
 
 def format_pal_display(pal: dict[str, str]) -> str:
@@ -96,7 +99,6 @@ def show_multiple_pal_answer(question: str,pals: list[dict[str, str]]) -> None:
     print(answer)
 
 
-
     """使用RAG检索知识后回答。"""
 
     print("\n--- RAG检索 ---")
@@ -131,6 +133,32 @@ def show_multiple_pal_answer(question: str,pals: list[dict[str, str]]) -> None:
     print(answer)
 
 
+def show_hybrid_answer(question: str) -> None:
+    """
+    使用Hybrid检索回答问题。
+    """
+
+    print("\n正在进行混合检索...")
+
+
+    result = hybrid_search(question)
+
+
+    context = build_hybrid_context(result)
+
+
+    print("\n--- AI回答 ---")
+
+
+    answer = answer_with_hybrid_context(
+        question,
+        context
+    )
+
+
+    print(answer)
+
+
 def show_rag_answer(question: str) -> None:
     """使用RAG检索知识后回答。"""
 
@@ -155,6 +183,19 @@ def show_rag_answer(question: str) -> None:
     print(answer)
 
 
+def is_only_pal_name(user_input: str) -> bool:
+    """
+    判断用户输入是否只是查询帕鲁名称。
+    """
+
+    pals = find_pals_in_text(user_input)
+
+    if len(pals) == 1 and pals[0]["name"] == user_input:
+        return True
+
+    return False
+
+
 def main() -> None:
     """程序入口，支持连续查询和主动退出。"""
 
@@ -167,6 +208,25 @@ def main() -> None:
         if user_input.lower() == "exit":
             print("程序已退出。")
             break
+
+
+        if not is_only_pal_name(user_input):
+
+            show_hybrid_answer(user_input)
+
+            continue
+
+
+        if user_input.startswith("/hybrid"):
+            question = user_input.replace(
+                "/hybrid",
+                ""
+            ).strip()
+
+            show_hybrid_answer(question)
+
+            continue
+
 
         # 第一优先级：
         # 判断用户问题中是否包含帕鲁名称
