@@ -18,6 +18,7 @@ from app.context_service import (
 from app.rag_service import retrieve_context
 from app.hybrid_service import hybrid_search
 from app.context_builder import build_hybrid_context
+from app.qa_service import answer
 
 
 def format_pal_display(pal: dict[str, str]) -> str:
@@ -135,28 +136,14 @@ def show_multiple_pal_answer(question: str,pals: list[dict[str, str]]) -> None:
 
 def show_hybrid_answer(question: str) -> None:
     """
-    使用Hybrid检索回答问题。
+    使用统一问答服务。
     """
-
-    print("\n正在进行混合检索...")
-
-
-    result = hybrid_search(question)
-
-
-    context = build_hybrid_context(result)
-
 
     print("\n--- AI回答 ---")
 
+    result = answer(question)
 
-    answer = answer_with_hybrid_context(
-        question,
-        context
-    )
-
-
-    print(answer)
+    print(result)
 
 
 def show_rag_answer(question: str) -> None:
