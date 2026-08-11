@@ -1,23 +1,51 @@
-import { useState } from "react";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
 import PalCard from "./PalCard";
 
 
 type Source = {
-  name: string;
-  type: string;
-  url: string;
+  name:string;
+  type:string;
+  url:string;
 };
 
 
-function ChatBox() {
+type Props = {
 
-  const [question, setQuestion] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [answer, setAnswer] = useState("");
-  const [sources, setSources] = useState<Source[]>([]);
+ question:string;
 
+ setQuestion:(value:string)=>void;
+
+ answer:string;
+
+ setAnswer:(value:string)=>void;
+
+ sources:Source[];
+
+ setSources:(value:Source[])=>void;
+
+ loading:boolean;
+
+ setLoading:(value:boolean)=>void;
+
+};
+
+
+function ChatBox({
+
+ question,
+ setQuestion,
+
+ answer,
+ setAnswer,
+
+ sources,
+ setSources,
+
+ loading,
+ setLoading
+
+}:Props){
 
   async function handleSubmit(){
 

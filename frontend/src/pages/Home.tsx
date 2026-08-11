@@ -1,10 +1,9 @@
 import ChatBox from "../components/ChatBox";
 
 
-function Home(){
+function Home(props:any){
 
   return (
-
     <div>
 
       <h1>
@@ -12,14 +11,14 @@ function Home(){
       </h1>
 
 
-      <ChatBox />
+      <ChatBox
+        {...props}
+      />
 
 
     </div>
-
   )
 
 }
-
 
 export default Home;
