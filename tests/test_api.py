@@ -27,13 +27,40 @@ def test_get_pal():
 
     data = response.json()
 
+
+    # 基础信息
+
     assert data["name"] == "棉悠悠"
 
     assert "element" in data
 
     assert "summary" in data
 
-    assert "tips" in data
+
+    # 工作能力
+
+    assert "work_suitability" in data
+
+    assert data["work_suitability"]["采集"] == 1
+
+
+    # 战斗信息
+
+    assert "combat" in data
+
+    assert "positioning" in data["combat"]
+
+
+    # 掉落
+
+    assert "drops" in data
+
+    assert "羊毛" in data["drops"]
+
+
+    # 推荐阶段
+
+    assert data["recommended_stage"] == "前期"
 
 
 def test_ask():

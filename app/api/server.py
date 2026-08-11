@@ -17,12 +17,33 @@ class AskRequest(BaseModel):
 class Source(BaseModel):
     name: str
     type: str
+    url: str
+    score: float | None = None
+
+
+class CombatInfo(BaseModel):
+    positioning: str
+    strengths: list[str]
+    weaknesses: list[str]
 
 
 class PalResponse(BaseModel):
     name: str
     element: list[str]
     summary: str
+
+    work_suitability: dict[str, int]
+
+    combat: CombatInfo
+
+    drops: list[str]
+
+    locations: list[str]
+
+    recommended_stage: str
+
+    recommendation: str
+
     tips: str
 
 
@@ -59,7 +80,9 @@ def ask(request: AskRequest):
         sources.append(
             {
                 "name": pal["name"],
-                "type": "pal"
+                "type": "pal",
+                "url": f"/pal/{pal['name']}",
+                "score": pal.get("score")
             }
         )
 
