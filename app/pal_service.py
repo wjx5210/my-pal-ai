@@ -34,7 +34,6 @@ def find_pals_by_name(name: str) -> list[dict[str, str]]:
             matched_pals.append(pal)
 
     return matched_pals
-    return None
 
 
 def find_pals_in_text(text: str) -> list[dict[str, str]]:
