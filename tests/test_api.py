@@ -63,6 +63,20 @@ def test_get_pal():
     assert data["recommended_stage"] == "前期"
 
 
+def test_list_pals():
+    response = client.get("/pals")
+
+    assert response.status_code == 200
+    assert len(response.json()) >= 18
+    assert response.json()[0]["name"] == "棉悠悠"
+
+
+def test_get_unknown_pal_returns_404():
+    response = client.get("/pal/不存在的帕鲁")
+
+    assert response.status_code == 404
+
+
 def test_ask():
 
     mock_result = {
@@ -101,3 +115,37 @@ def test_ask():
 
 
     assert data["sources"][0]["name"] == "企丸丸"
+    assert data["session_id"]
+
+
+def test_ask_reuses_session_history():
+    mock_result = {
+        "answer": "它更适合基地工作",
+        "retrieval": {"entities": [], "rag_contexts": []},
+        "context": [],
+    }
+
+    with patch(
+        "app.api.server.answer_with_debug",
+        return_value=mock_result,
+    ) as mocked_answer:
+        response = client.post(
+            "/ask",
+            json={"question": "那它适合基地吗", "session_id": "test-session"},
+        )
+
+    assert response.status_code == 200
+    assert response.json()["session_id"] == "test-session"
+    mocked_answer.assert_called_once()
+
+
+def test_pal_ai_summary():
+    with patch(
+        "app.api.server.generate_pal_guide",
+        return_value="适合前期提供羊毛。",
+    ):
+        response = client.post("/pal/棉悠悠/summary")
+
+    assert response.status_code == 200
+    assert response.json()["name"] == "棉悠悠"
+    assert "羊毛" in response.json()["summary"]

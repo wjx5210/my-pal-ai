@@ -1,125 +1,107 @@
-import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import ReactMarkdown from "react-markdown";
+import { Link, useParams } from "react-router-dom";
+
+import { api } from "../api";
+import type { Pal } from "../types";
 
 
-type Pal = {
+function PalDetail() {
+  const { name } = useParams();
+  const [pal, setPal] = useState<Pal | null>(null);
+  const [error, setError] = useState("");
+  const [summary, setSummary] = useState("");
+  const [summaryLoading, setSummaryLoading] = useState(false);
 
-  name:string;
+  useEffect(() => {
+    if (!name) return;
+    api.get<Pal>(`/pal/${encodeURIComponent(name)}`)
+      .then((response) => setPal(response.data))
+      .catch(() => setError("没有找到这只帕鲁，或者后端服务暂时不可用。"));
+  }, [name]);
 
-  element:string[];
-
-  summary:string;
-
-  work_suitability:{
-    [key:string]:number;
-  };
-
-  drops:string[];
-
-};
-
-
-function PalDetail(){
-
-  const {name} = useParams();
-
-
-  const [pal,setPal] = useState<Pal | null>(null);
-
-
-  useEffect(()=>{
-
-
-    if(!name){
-      return;
+  async function generateSummary() {
+    if (!pal || summaryLoading) return;
+    setSummaryLoading(true);
+    try {
+      const response = await api.post(`/pal/${encodeURIComponent(pal.name)}/summary`);
+      setSummary(response.data.summary);
+    } catch {
+      setSummary("AI 总结暂时不可用，请稍后再试。");
+    } finally {
+      setSummaryLoading(false);
     }
-
-
-    axios
-      .get(
-        `http://127.0.0.1:8000/pal/${name}`
-      )
-      .then(res=>{
-
-        setPal(res.data);
-
-      });
-
-
-  },[name]);
-
-
-
-  if(!pal){
-
-    return (
-      <div>
-        加载中...
-      </div>
-    )
-
   }
 
-
+  if (error) {
+    return <div className="detail-state"><p>{error}</p><Link to="/">返回图鉴</Link></div>;
+  }
+  if (!pal) return <div className="detail-state">正在载入帕鲁资料…</div>;
 
   return (
+    <div className="detail-page">
+      <header className="detail-nav">
+        <Link to="/">← 返回帕鲁图鉴</Link>
+        <span>MY PAL ARCHIVE</span>
+      </header>
 
-    <div>
+      <main className="detail-content">
+        <section className="detail-hero">
+          <div className="detail-emblem">{pal.element[0] === "火属性" ? "🔥" : pal.element[0] === "水属性" ? "💧" : pal.element[0] === "草属性" ? "🍃" : pal.element[0] === "雷属性" ? "⚡" : pal.element[0] === "冰属性" ? "❄" : "✦"}</div>
+          <div>
+            <span className="eyebrow">PAL PROFILE</span>
+            <h1>{pal.name}</h1>
+            <div className="element-row large">
+              {pal.element.map((item) => <span className="element-pill" key={item}>{item}</span>)}
+              <span className="stage-pill">推荐：{pal.recommended_stage}</span>
+            </div>
+            <p>{pal.summary}</p>
+          </div>
+        </section>
 
-      <h1>
-        {pal.name}
-      </h1>
+        <div className="detail-grid">
+          <section className="detail-card">
+            <span className="eyebrow">BASE WORK</span><h2>工作适应性</h2>
+            <div className="work-grid">
+              {Object.entries(pal.work_suitability).map(([work, level]) => (
+                <div key={work}><span>{work}</span><strong>Lv.{level}</strong></div>
+              ))}
+            </div>
+          </section>
 
+          <section className="detail-card">
+            <span className="eyebrow">COMBAT</span><h2>战斗定位</h2>
+            <p className="positioning">{pal.combat.positioning}</p>
+            <div className="pros-cons">
+              <div><h3>优势</h3>{pal.combat.strengths.map((item) => <p key={item}>＋ {item}</p>)}</div>
+              <div><h3>弱点</h3>{pal.combat.weaknesses.map((item) => <p key={item}>－ {item}</p>)}</div>
+            </div>
+          </section>
 
-      <h3>
-        属性
-      </h3>
+          <section className="detail-card">
+            <span className="eyebrow">FIELD DATA</span><h2>地点与掉落</h2>
+            <h3>出现地点</h3>{pal.locations.map((item) => <span className="data-tag" key={item}>{item}</span>)}
+            <h3>掉落物</h3>{pal.drops.map((item) => <span className="data-tag" key={item}>{item}</span>)}
+          </section>
 
-      <p>
-        {pal.element.join("、")}
-      </p>
+          <section className="detail-card recommendation-card">
+            <span className="eyebrow">RECOMMENDATION</span><h2>培养建议</h2>
+            <p>{pal.recommendation}</p>
+            <blockquote>{pal.tips}</blockquote>
+          </section>
+        </div>
 
-
-      <h3>
-        简介
-      </h3>
-
-      <p>
-        {pal.summary}
-      </p>
-
-
-      <h3>
-        工作能力
-      </h3>
-
-      {
-        Object.entries(
-          pal.work_suitability
-        ).map(([key,value])=>(
-
-          <p key={key}>
-            {key} Lv.{value}
-          </p>
-
-        ))
-      }
-
-
-      <h3>
-        掉落
-      </h3>
-
-      <p>
-        {pal.drops.join("、")}
-      </p>
-
-
+        <section className="ai-summary-card">
+          <div>
+            <span className="assistant-orb">AI</span>
+            <div><span className="eyebrow">AI BRIEFING</span><h2>让 AI 总结这只帕鲁</h2><p>基于图鉴资料，生成一份简洁的培养与使用建议。</p></div>
+          </div>
+          {!summary && <button onClick={generateSummary} disabled={summaryLoading}>{summaryLoading ? "正在分析…" : "生成 AI 总结"}</button>}
+          {summary && <div className="ai-summary-answer"><ReactMarkdown>{summary}</ReactMarkdown></div>}
+        </section>
+      </main>
     </div>
-
-  )
-
+  );
 }
 
 

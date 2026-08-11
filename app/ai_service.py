@@ -262,7 +262,11 @@ def answer_with_multiple_pal_context(question: str, pals: list[dict[str, str]]) 
 )
 
 
-def answer_with_hybrid_context(question: str,context: dict) -> str:
+def answer_with_hybrid_context(
+    question: str,
+    context: dict,
+    history: list[dict[str, str]] | None = None,
+) -> str:
     """
     根据Hybrid检索结果生成回答。
     """
@@ -281,6 +285,14 @@ def answer_with_hybrid_context(question: str,context: dict) -> str:
         context["knowledge"]
     )
 
+    history_text = "暂无历史对话"
+
+    if history:
+        history_text = "\n".join(
+            f"{'用户' if item['role'] == 'user' else '助手'}：{item['content']}"
+            for item in history[-12:]
+        )
+
 
     prompt = f"""
 你是一名《幻兽帕鲁》攻略助手。
@@ -288,6 +300,11 @@ def answer_with_hybrid_context(question: str,context: dict) -> str:
 用户问题：
 
 {question}
+
+
+最近的会话历史：
+
+{history_text}
 
 
 以下是相关帕鲁资料：
@@ -309,6 +326,8 @@ def answer_with_hybrid_context(question: str,context: dict) -> str:
 5. 如果用户是在比较帕鲁，请给出明确建议。
 6. 如果用户要求比较多个帕鲁，请从多个角度分析差异。
 7. 即使资料不完整，也可以基于已有资料给出有限条件下的推荐，不要简单拒绝判断。
+8. 如果问题是追问，请结合会话历史理解省略的帕鲁名称或比较对象。
+9. 历史对话只用于理解上下文，事实仍以本次提供的知识库资料为准。
 """
 
 
