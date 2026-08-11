@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from app.qa_service import answer_with_debug
@@ -7,6 +8,17 @@ from app.pal_service import find_pals_by_name
 
 app = FastAPI(
     title="我的帕鲁 AI 攻略助手"
+)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
