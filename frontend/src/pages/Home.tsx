@@ -58,7 +58,7 @@ function Home(props: Props) {
           <a href="#paldex">帕鲁图鉴</a>
           <a href="#assistant">AI 问答</a>
         </nav>
-        <span className="knowledge-status"><i />知识库在线 · {pals.length || 18} Pals</span>
+        <span className="knowledge-status"><i />知识库在线 · {pals.length || 100} Pals</span>
       </header>
 
       <main id="top">
@@ -68,7 +68,7 @@ function Home(props: Props) {
             <h1>找对帕鲁，<br /><em>每一步都有答案。</em></h1>
             <p>浏览结构化帕鲁图鉴，按属性和工作能力快速筛选；也可以直接向 AI 提问，并在同一段会话里继续追问。</p>
             <div className="hero-stats">
-              <div><strong>{pals.length || 18}</strong><span>已收录帕鲁</span></div>
+              <div><strong>{pals.length || 100}</strong><span>已收录帕鲁</span></div>
               <div><strong>9</strong><span>属性类型</span></div>
               <div><strong>RAG</strong><span>知识增强问答</span></div>
             </div>

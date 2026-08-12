@@ -9,8 +9,9 @@ VECTOR_STORE_PATH = "data/vector_store.json"
 
 def retrieve_context(
     question: str,
-    top_k: int = 3
-) -> list[str]:
+    top_k: int = 3,
+    threshold: float = 0.35,
+) -> list[dict]:
     """
     根据问题检索相关知识。
     """
@@ -29,7 +30,7 @@ def retrieve_context(
     results = store.search(
         query_vector,
         top_k=top_k,
-        threshold=0.7
+        threshold=threshold
     )
 
 

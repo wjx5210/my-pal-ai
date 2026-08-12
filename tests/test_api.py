@@ -41,7 +41,7 @@ def test_get_pal():
 
     assert "work_suitability" in data
 
-    assert data["work_suitability"]["采集"] == 1
+    assert data["work_suitability"]["手工作业"] == 1
 
 
     # 战斗信息

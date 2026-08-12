@@ -9,7 +9,7 @@
 | 项目 | 当前实现 |
 | --- | --- |
 | 交互方式 | React 图鉴网站 + 命令行问答 |
-| 知识库 | 18 个结构化帕鲁对象 |
+| 知识库 | 100 个结构化帕鲁对象 |
 | 检索方式 | 实体精确匹配 + 向量相似度检索 |
 | 回答模型 | DeepSeek `deepseek-v4-flash` |
 | Embedding | 阿里云百炼 `text-embedding-v3` |
@@ -17,7 +17,7 @@
 | 默认检索参数 | Top 3，最低相似度 0.7 |
 | 可观测性 | 检索调试输出、Prompt/回答日志 |
 | 会话能力 | 最近 12 条消息记忆、追问检索、本地历史恢复 |
-| 测试规模 | 33 项，包含单元、API、集成和在线 AI 评估测试 |
+| 测试规模 | 34 项，包含单元、API、集成和在线 AI 评估测试 |
 
 ## 核心能力
 
@@ -153,7 +153,7 @@ python -m app.main
 
 ## Web 功能
 
-- 首页展示 18 个帕鲁的响应式图鉴卡片。
+- 首页展示 100 个帕鲁的响应式图鉴卡片。
 - 支持按名称或简介搜索，并按属性、基地工作筛选。
 - 首页内置 RAG 聊天面板，可连续追问和查看参考帕鲁。
 - 浏览器保存当前对话；后端通过会话 ID 保留最近 12 条消息。
@@ -277,7 +277,7 @@ my-pal-ai/
 
 ## 知识库结构
 
-`data/pals.json` 当前包含 18 个帕鲁。每条数据采用以下结构：
+`data/pals.json` 当前包含从 PalDB 图鉴顺序采集的前 100 个帕鲁。每条数据采用以下结构：
 
 ```json
 {
@@ -302,6 +302,24 @@ my-pal-ai/
 
 修改知识源后，需要重新运行向量库构建脚本，否则语义检索仍会使用旧数据。
 
+## PalDB 数据采集
+
+项目提供低频、可缓存、可续跑的采集脚本，用于生成图鉴顺序前 100 个帕鲁的结构化数据：
+
+```bash
+python scripts/crawl_paldb.py --limit 100 --delay 2
+```
+
+默认输出：
+
+- `data/imported/paldb_first_100.json`：清洗后的兼容知识库。
+- `data/raw/paldb/`：原始 HTML 缓存，不提交 Git。
+- `data/manifests/paldb_first_100.json`：URL、采集时间、状态和内容哈希。
+
+采集器使用单线程、请求间隔、超时重试、可识别 User-Agent 和本地缓存。详情事实保存在 `wiki` 字段中，包括图鉴编号、伙伴技能、基础属性、移动能力、主动技能和来源 URL；`combat`、推荐阶段等攻略字段由本地规则派生。
+
+重新采集前请确认来源网站的服务条款和自动访问许可，不要绕过验证码、登录或访问限制。修改结构化数据后仍需重新构建向量库。
+
 ## 测试与评估
 
 收集完整测试集：
@@ -316,7 +334,7 @@ python -m pytest --collect-only -q
 python -m pytest -q
 ```
 
-当前共收集 33 项测试，覆盖：
+当前共收集 34 项测试，覆盖：
 
 - 本地名称匹配与数据校验
 - 意图分类和上下文构建
@@ -350,10 +368,73 @@ python -m pytest -q
 
 ## 当前限制
 
-- 知识库只有 18 个帕鲁，无法覆盖完整游戏内容。
+- 当前只采集了 PalDB 图鉴顺序中的前 100 个帕鲁，尚未覆盖完整游戏内容。
 - 名称实体识别仍基于字符串匹配，不支持别名、错别字和语义实体抽取。
 - 向量库需要在数据更新后手动重建，暂不支持增量更新。
 - 本地 JSON 向量库适合原型验证，不适合大规模数据或高并发检索。
+
+## 国内云服务器部署
+
+项目已经提供 Docker Compose 生产配置，适用于 Ubuntu 服务器。部署结构为 Nginx 静态托管 React，并通过同域 `/api` 反向代理 FastAPI，因此使用公网 IP 测试时不需要单独配置跨域。
+
+### 服务器准备
+
+建议使用 Ubuntu 24.04、2 核 4 GB 或更高配置，并安装 Docker Engine 与 Docker Compose Plugin。云防火墙仅需开放 `22`、`80`；备案和证书完成后再开放 `443`。
+
+### 上传与配置
+
+将项目上传或拉取到服务器，确认以下文件存在：
+
+```text
+data/pals.json
+data/vector_store.json
+```
+
+向量库属于部署所需的只读产物。知识数据变化后，应先在可信环境重新执行 `python scripts/build_vector_store.py`，再将生成结果部署到服务器，避免每次构建容器都重复调用 Embedding API。
+
+创建生产环境变量：
+
+```bash
+cp .env.production.example .env.production
+```
+
+编辑 `.env.production`，填写：
+
+```dotenv
+DEEPSEEK_API_KEY=你的DeepSeek密钥
+BAILIAN_API_KEY=你的百炼密钥
+ALLOWED_ORIGINS=
+ENABLE_PROMPT_LOG=false
+DEBUG_RETRIEVAL=false
+```
+
+`.env.production` 已被 Git 忽略。前后端默认同域访问，`ALLOWED_ORIGINS` 可以留空；如果后续拆分前后端域名，再填写允许的完整来源地址，多个地址使用英文逗号分隔。
+
+### 启动与检查
+
+```bash
+chmod +x scripts/deploy.sh
+./scripts/deploy.sh
+```
+
+也可以直接运行：
+
+```bash
+docker compose up -d --build
+```
+
+检查服务：
+
+```bash
+docker compose ps
+docker compose logs --tail=100
+curl http://127.0.0.1/health
+curl http://127.0.0.1/api/health
+```
+
+域名备案完成前，可通过 `http://服务器公网IP` 验证页面。备案完成并解析域名后，再为 Nginx 增加 SSL 证书和 `443` 配置。
+
+AI 问答和详情总结接口已在 Nginx 层按公网 IP 限制为平均每分钟 5 次，并允许少量突发请求。正式公开前仍应在 DeepSeek 和百炼控制台配置余额预警及调用额度。
 - 检索阈值、Top K、模型和服务地址目前主要写在代码中，尚未统一配置化。
 - 会话历史当前保存在单个后端进程内，服务重启后会丢失，也不适合多实例部署。
 - 图鉴卡片目前使用属性视觉标识，尚未接入帕鲁图片资源。

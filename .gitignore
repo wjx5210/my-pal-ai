@@ -3,4 +3,6 @@
 venv/
 __pycache__/
 *.pyc
-data/vector_store.json
+data/raw/
+data/manifests/
+.env.production

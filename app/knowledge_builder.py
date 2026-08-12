@@ -7,7 +7,14 @@ def build_pal_text(pal: dict) -> str:
     将帕鲁数据转换成知识文本。
     """
 
+    wiki = pal.get("wiki", {})
+    partner_skill = wiki.get("partner_skill", {})
+    active_skills = wiki.get("active_skills", [])
+
     return f"""
+图鉴编号：
+{wiki.get('dex_no', '暂无资料')}
+
 名称：
 {pal['name']}
 
@@ -43,6 +50,21 @@ def build_pal_text(pal: dict) -> str:
 
 攻略提示：
 {pal['tips']}
+
+伙伴技能：
+{partner_skill.get('name', '暂无资料')}：{partner_skill.get('description', '暂无资料')}
+
+基础属性：
+{wiki.get('base_stats', {})}
+
+移动能力：
+{wiki.get('movement', {})}
+
+主动技能：
+{active_skills}
+
+资料来源：
+{wiki.get('source_url', '本地知识库')}
 """
 
 
@@ -76,7 +98,9 @@ def build_vector_store(
             {
                 "name": pal["name"],
                 "element": pal["element"],
-                "recommended_stage": pal["recommended_stage"]
+                "recommended_stage": pal["recommended_stage"],
+                "dex_no": pal.get("wiki", {}).get("dex_no"),
+                "source_url": pal.get("wiki", {}).get("source_url"),
             }
         )
 
