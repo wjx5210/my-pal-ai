@@ -139,13 +139,18 @@ def parse_stats(soup: BeautifulSoup, title: str, labels: list[str]) -> dict[str,
 
 def parse_skills(soup: BeautifulSoup) -> list[dict]:
     skills: list[dict] = []
+    seen_names: set[str] = set()
     pattern = re.compile(r"(.+?)(无属性|火属性|水属性|雷属性|草属性|暗属性|龙属性|地属性|冰属性)\s*(近战|远程)?\s*Lv\.?\s*(\d+)\s*威力:\s*(\d+)")
     for node in heading_section(soup, "主动技能"):
         for anchor in node.find_all("a"):
             text = clean_text(anchor.get_text(" ", strip=True))
             match = pattern.match(text)
             if match:
-                skills.append({"name": clean_text(match.group(1)), "element": match.group(2), "range": match.group(3) or "", "unlock_level": int(match.group(4)), "power": int(match.group(5)), "description": text})
+                name = clean_text(match.group(1))
+                if name in seen_names:
+                    continue
+                seen_names.add(name)
+                skills.append({"name": name, "element": match.group(2), "range": match.group(3) or "", "unlock_level": int(match.group(4)), "power": int(match.group(5)), "description": text})
     return skills
 
 
