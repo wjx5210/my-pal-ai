@@ -112,6 +112,9 @@ body {
 .state-panel.error { color: #ff9c9c; }
 
 footer { max-width: 1480px; margin: 0 auto; padding: 25px clamp(20px, 5vw, 72px); border-top: 1px solid rgba(255,255,255,.07); color: #6f7a88; font-size: 11px; display: flex; justify-content: space-between; }
+.footer-meta { display: flex; align-items: center; gap: 18px; }
+.footer-meta a { color: #8f9aa8; text-decoration: none; }
+.footer-meta a:hover { color: var(--cyan); }
 
 .detail-page { min-height: 100vh; }
 .detail-nav a { color: var(--text); text-decoration: none; }.detail-nav a:hover { color: var(--lime); }
@@ -160,7 +163,7 @@ footer { max-width: 1480px; margin: 0 auto; padding: 25px clamp(20px, 5vw, 72px)
   .filter-group { flex-direction: column; }.filter-group > span { width: auto; }
   .detail-hero { grid-template-columns: 1fr; }.detail-emblem { height: 190px; width: 190px; }
   .detail-grid { grid-template-columns: 1fr; }.detail-hero h1 { font-size: 54px; }
-  footer { flex-direction: column; gap: 8px; }
+  footer, .footer-meta { flex-direction: column; align-items: flex-start; gap: 8px; }
 }
 
 @media (max-width: 480px) {

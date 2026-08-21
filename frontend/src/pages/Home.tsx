@@ -129,7 +129,15 @@ function Home(props: Props) {
         </section>
       </main>
 
-      <footer><span>My Pal AI · 混合 RAG 图鉴实验</span><span>资料来自本地知识库，AI 回答仅供参考</span></footer>
+      <footer>
+        <span>My Pal AI · 混合 RAG 图鉴实验</span>
+        <span className="footer-meta">
+          <span>资料来自本地知识库，AI 回答仅供参考</span>
+          <a href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer">
+            皖ICP备2026027122号
+          </a>
+        </span>
+      </footer>
     </div>
   );
 }
