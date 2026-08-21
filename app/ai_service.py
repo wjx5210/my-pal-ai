@@ -1,27 +1,36 @@
 from app.llm_client import chat_completion, MODEL_NAME
 from app.logger_service import save_qa_log
 from app.config import ENABLE_PROMPT_LOG
+from app.knowledge_builder import build_pal_text
 
 
-def generate_pal_guide(pal_info: dict[str, str]) -> str:
-    """根据帕鲁数据生成 AI 攻略。"""
+def build_pal_guide_prompt(pal_info: dict) -> str:
+    """Build a detail-page prompt from every available knowledge field."""
 
-    prompt = f"""
+    pal_text = build_pal_text(pal_info)
+    return f"""
 你是一名《幻兽帕鲁》攻略助手。
 
-请严格根据下面提供的帕鲁资料回答用户。
+请严格根据下面提供的完整帕鲁资料生成详情页总结，不要声称资料中已经提供的字段缺失。
 
-帕鲁资料：
-名称：{pal_info['name']}
-属性：{pal_info['element']}
-简介：{pal_info['summary']}
-攻略提示：{pal_info['tips']}
+完整帕鲁资料：
+{pal_text}
 
 要求：
-1. 使用中文回答。
-2. 不要编造资料中没有的信息。
-3. 用简洁的攻略风格介绍这只帕鲁。
+1. 使用中文回答，不要编造资料中没有的信息。
+2. 先概括定位和推荐阶段。
+3. 结合工作适性名称与等级说明基地用途。
+4. 结合基础属性、战斗优势、弱点和主动技能说明战斗表现。
+5. 说明伙伴技能、掉落物和捕获地点；地点代码无法自然解释时，只说明资料记录的区域。
+6. 最后给出明确的培养建议和使用注意事项。
+7. 内容控制在 300 至 500 字，使用简洁的小标题或项目符号。
 """
+
+
+def generate_pal_guide(pal_info: dict) -> str:
+    """根据帕鲁数据生成 AI 攻略。"""
+
+    prompt = build_pal_guide_prompt(pal_info)
     return chat_completion(
     [
         {
