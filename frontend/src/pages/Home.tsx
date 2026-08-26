@@ -136,6 +136,15 @@ function Home(props: Props) {
           <a href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer">
             皖ICP备2026027122号
           </a>
+          <a
+            className="public-security-record"
+            href="https://beian.mps.gov.cn/#/query/webSearch?code=34130202000906"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <img src="/beian-icon.png" alt="公安备案图标" />
+            <span>皖公网安备34130202000906号</span>
+          </a>
         </span>
       </footer>
     </div>
