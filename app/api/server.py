@@ -12,10 +12,12 @@ from app.conversation_service import (
     get_history,
 )
 from app.pal_service import find_pals_by_name, load_pals
+from app.observability import observe_request
 from app.qa_service import answer_with_debug
 
 
 app = FastAPI(title="我的帕鲁 AI 攻略助手")
+app.middleware("http")(observe_request)
 
 allowed_origins = [
     origin.strip()
@@ -32,6 +34,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["X-Request-ID"],
 )
 
 

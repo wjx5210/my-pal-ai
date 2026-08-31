@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 from app.api.server import app
 from unittest.mock import patch
+from uuid import UUID
 
 
 client = TestClient(app)
@@ -15,6 +16,38 @@ def test_health():
     assert response.json() == {
         "status": "ok"
     }
+
+    UUID(response.headers["X-Request-ID"])
+
+
+def test_request_id_is_preserved_and_logged(caplog):
+    request_id = "deploy-check-20260831"
+
+    with caplog.at_level("INFO", logger="uvicorn.error.app_access"):
+        response = client.get(
+            "/health",
+            headers={"X-Request-ID": request_id},
+        )
+
+    assert response.headers["X-Request-ID"] == request_id
+    assert any(
+        request_id in record.message
+        and "path=/health" in record.message
+        and "status_code=200" in record.message
+        and "duration_ms=" in record.message
+        for record in caplog.records
+    )
+
+
+def test_invalid_request_id_is_replaced():
+    response = client.get(
+        "/health",
+        headers={"X-Request-ID": "not valid because it has spaces"},
+    )
+
+    generated_id = response.headers["X-Request-ID"]
+    assert generated_id != "not valid because it has spaces"
+    UUID(generated_id)
 
 
 def test_get_pal():
