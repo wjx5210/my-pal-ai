@@ -246,9 +246,18 @@ request_complete request_id=... method=GET path=/health status_code=200 duration
 
 ### 上线与回滚
 
-本轮只修改 API 应用，需要在服务器拉取 `main` 后重建 `api` 服务。公网验证应使用唯一请求 ID访问 `/health`，再在 API 日志中检索同一 ID。
+本轮只修改 API 应用，需要在服务器拉取 `main` 后重建 `api` 服务。公网验证应使用唯一请求 ID访问 `/api/health`，再在 API 日志中检索同一 ID。
 
 如中间件导致异常，可回滚到上一提交并重建 API；本轮没有数据或配置迁移。
+
+### 公网发布结果
+
+- 发布提交：`55b02ae`。
+- 服务器仅重建 API，Web 容器、`.env.production` 和本地修改的向量库均未触碰。
+- API 新容器启动后健康状态为 `healthy`。
+- 首次使用公网 `/health` 验证时没有请求 ID，因为该路径由 Web Nginx直接返回，不经过 FastAPI。这次检查帮助明确了“站点健康”和“API 健康”是两条不同链路。
+- 改用 `https://mypalai.space/api/health` 后返回 HTTP 200，并原样返回 `x-request-id: public-observability-55b02ae`。
+- API 容器日志出现同一 ID：方法 `GET`、应用内路径 `/health`、状态码 200、耗时 0.65 ms，公网追踪闭环验证成功。
 
 ### 遗留问题与下一步
 
