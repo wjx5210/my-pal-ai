@@ -80,9 +80,9 @@ function ChatBox({ messages, setMessages, sessionId, setSessionId }: Props) {
     <section className="chat-shell" aria-label="帕鲁 AI 问答">
       <div className="chat-header">
         <div>
-          <span className="eyebrow">RAG GUIDE</span>
-          <h2>问问帕鲁助手</h2>
-          <p>支持连续追问，会结合最近的对话理解你的问题。</p>
+          <span className="eyebrow">攻略咨询台</span>
+          <h2>今天想解决什么？</h2>
+          <p>可以连续追问，回答会标出参考帕鲁。</p>
         </div>
         {messages.length > 0 && (
           <button className="text-button" onClick={clearConversation}>新对话</button>
@@ -92,8 +92,8 @@ function ChatBox({ messages, setMessages, sessionId, setSessionId }: Props) {
       <div className="chat-history" aria-live="polite">
         {messages.length === 0 ? (
           <div className="chat-empty">
-            <div className="assistant-orb">AI</div>
-            <strong>从培养、工作、属性或掉落开始问</strong>
+            <div className="assistant-orb">问</div>
+            <strong>从一个具体问题开始</strong>
             <div className="suggestion-list">
               {suggestions.map((suggestion) => (
                 <button key={suggestion} onClick={() => handleSubmit(suggestion)}>
@@ -142,7 +142,7 @@ function ChatBox({ messages, setMessages, sessionId, setSessionId }: Props) {
         <input
           value={question}
           onChange={(event) => setQuestion(event.target.value)}
-          placeholder={messages.length ? "继续追问，例如：那和企丸丸相比呢？" : "输入你的帕鲁问题…"}
+          placeholder={messages.length ? "继续追问，例如：那和企丸丸相比呢？" : "例如：前期陆地坐骑有哪些？"}
           maxLength={1000}
         />
         <button type="submit" disabled={!question.trim() || loading}>

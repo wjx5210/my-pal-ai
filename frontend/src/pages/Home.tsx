@@ -51,26 +51,30 @@ function Home(props: Props) {
     <div className="site-shell">
       <header className="site-header">
         <a className="brand" href="#top" aria-label="我的帕鲁首页">
-          <span className="brand-mark">P</span>
-          <span><strong>我的帕鲁</strong><small>AI 图鉴助手</small></span>
+          <span className="brand-mark">帕</span>
+          <span><strong>我的帕鲁</strong><small>野外调查手册</small></span>
         </a>
         <nav>
           <a href="#paldex">帕鲁图鉴</a>
           <a href="#assistant">AI 问答</a>
         </nav>
-        <span className="knowledge-status"><i />知识库在线 · {pals.length || 100} Pals</span>
+        <span className="knowledge-status"><i />资料库已载入 · {pals.length || 100} 条</span>
       </header>
 
       <main id="top">
         <section className="hero-section">
           <div className="hero-copy">
-            <span className="eyebrow">PAL INTELLIGENCE ARCHIVE</span>
-            <h1>找对帕鲁，<br /><em>每一步都有答案。</em></h1>
-            <p>浏览结构化帕鲁图鉴，按属性和工作能力快速筛选；也可以直接向 AI 提问，并在同一段会话里继续追问。</p>
+            <span className="eyebrow">帕洛斯群岛 · 调查记录 001</span>
+            <h1>查图鉴，配队伍，<br /><em>少走一点弯路。</em></h1>
+            <p>按属性和工作能力筛选帕鲁，或者把具体问题交给攻略助手。资料来自本地图鉴，回答会附上参考对象。</p>
+            <div className="hero-actions">
+              <a className="primary-link" href="#paldex">开始查图鉴</a>
+              <a className="secondary-link" href="#assistant">直接提问</a>
+            </div>
             <div className="hero-stats">
-              <div><strong>{pals.length || 100}</strong><span>已收录帕鲁</span></div>
-              <div><strong>9</strong><span>属性类型</span></div>
-              <div><strong>RAG</strong><span>知识增强问答</span></div>
+              <div><strong>{pals.length || 100}</strong><span>图鉴记录</span></div>
+              <div><strong>9</strong><span>属性分类</span></div>
+              <div><strong>12</strong><span>工作类型</span></div>
             </div>
           </div>
           <div id="assistant" className="hero-chat">
@@ -81,11 +85,11 @@ function Home(props: Props) {
         <section className="paldex-section" id="paldex">
           <div className="section-heading">
             <div>
-              <span className="eyebrow">PALDEX</span>
+              <span className="eyebrow">调查目录</span>
               <h2>帕鲁图鉴</h2>
               <p>搜索名称，或按照属性与基地工作快速缩小范围。</p>
             </div>
-            <strong>{filteredPals.length} / {pals.length} Pals</strong>
+            <strong>当前显示 {filteredPals.length} / {pals.length}</strong>
           </div>
 
           <div className="filter-panel">
@@ -130,7 +134,7 @@ function Home(props: Props) {
       </main>
 
       <footer>
-        <span>My Pal AI · 混合 RAG 图鉴实验</span>
+        <span>我的帕鲁 · 非官方调查手册</span>
         <span className="footer-meta">
           <span>资料来自本地知识库，AI 回答仅供参考</span>
           <a href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer">
