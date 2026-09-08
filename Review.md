@@ -377,3 +377,19 @@ request_complete request_id=... method=GET path=/health status_code=200 duration
 提交并推送 `main` 后，把版本库中的站点配置复制到服务器临时路径，先执行 Nginx 配置校验；只有校验通过才覆盖正式配置并平滑重载。发布后分别检查首页、静态资源、API 响应、HTTP 跳转和 CSP 下的关键业务接口。
 
 正式配置覆盖前保留带时间戳备份。若响应头或页面功能异常，恢复备份、再次校验并重载 Nginx；本轮不重建 Docker 服务，也不修改证书、环境变量或向量库。
+
+### 公网发布结果
+
+- 发布提交：`3d2ed19`。
+- 服务器通过 `git pull --ff-only` 快进到该提交，原有 `data/vector_store.json` 本地修改、`.env.production` 和证书目录均未触碰。
+- 原站点文件备份为 `/etc/nginx/sites-available/mypalai.space.backup-3d2ed19`。
+- 新配置通过 `nginx -t` 后才执行平滑重载，Nginx 服务状态保持 `active`，Docker 服务无需重建。
+- HTTPS 首页、带长期缓存的 CSS 静态资源和 `/api/health` 均返回 HTTP 200，并同时包含 HSTS、CSP、`nosniff`、`DENY`、Referrer Policy 和 Permissions Policy。
+- `/api/health` 仍返回应用生成的 `X-Request-ID`，说明外层响应头加固没有破坏 API 追踪链路。
+- 明文请求 `http://mypalai.space/test-path?check=security` 返回 301，目标为 `https://mypalai.space/test-path?check=security`，路径和查询参数得到保留。
+
+### 本轮总结与下一步
+
+本轮把一个“响应里少了几个 Header”的现象，拆成了传输层归属、策略取舍、失败测试、配置校验、无中断重载和公网分层验证。关键工程判断是：安全配置不仅要更强，也必须知道如何撤销；因此没有在缺少子域名清单和预加载退出计划时直接启用 `includeSubDomains; preload`。
+
+下一轮可以建立性能基线：记录首页静态资源体积、接口延迟分布与缓存命中情况，再根据数据决定做前端拆包、图片优化还是 API 缓存，避免凭感觉优化。
