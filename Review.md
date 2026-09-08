@@ -331,3 +331,49 @@ request_complete request_id=... method=GET path=/health status_code=200 duration
 这次优化说明“去 AI 感”不是删除 AI 字样，而是重新安排产品主次：图鉴浏览和具体问题成为主任务，AI 只作为咨询与资料分析能力出现。视觉上通过减少发光、胶囊、悬浮卡片等高频模板特征，并引入与内容一致的调查档案语言，让界面身份来自业务本身。
 
 流程上也暴露出两个应改进点：应准备一个能被验收工具访问的预发布地址，避免视觉检查只能放在生产发布后；服务器无法访问 GitHub 时，应保留经过校验的 Git bundle 发布预案，而不是直接复制源文件导致提交历史漂移。
+
+---
+
+## 2026-09-08：HTTPS 安全响应头加固
+
+### 为什么要优化
+
+前一轮公网检查已确认首页没有 `Strict-Transport-Security`。虽然证书和 HTTP 到 HTTPS 跳转正常，但浏览器在首次成功访问后不会记住“以后只能使用 HTTPS”，站点也没有限制页面嵌入、MIME 嗅探、来源信息泄露和不必要的浏览器权限。
+
+这类优化的价值不是改变页面外观，而是把已经具备的 HTTPS 从“当前连接加密”提升为“浏览器持续执行的安全策略”。
+
+### 方案与取舍
+
+安全头放在宿主机 HTTPS Nginx，而不是内部 Web 容器。内部容器只接收宿主机转发的 HTTP，HSTS 放在那里会混淆传输层边界；MDN 也明确说明 HSTS 只应通过 HTTPS 响应发送。
+
+本轮配置：
+
+- `Strict-Transport-Security: max-age=31536000`：当前主机记忆一年。
+- `Content-Security-Policy`：资源默认只允许同源，禁止对象资源和第三方嵌入，限制表单、连接、脚本、样式、字体与图片来源，并升级不安全请求。
+- `X-Content-Type-Options: nosniff`：禁止 MIME 类型猜测。
+- `X-Frame-Options: DENY` 与 CSP `frame-ancestors 'none'`：兼顾旧浏览器并阻止点击劫持。
+- `Referrer-Policy: strict-origin-when-cross-origin`：跨站请求只发送来源站点，不泄露完整路径。
+- `Permissions-Policy`：关闭当前站点不需要的摄像头、麦克风和定位权限。
+
+暂不加入 HSTS `preload`，因为浏览器预加载名单难以快速撤销；暂不加入 `includeSubDomains`，避免未来尚未配置 HTTPS 的子域名被提前锁死。这是安全强度与可回滚性的有意取舍。
+
+### 测试驱动过程
+
+先新增 Nginx 安全基线测试并运行，得到 2 项失败、1 项通过，证明旧配置缺少 HTTPS server 和安全头。随后补齐版本库中的生产 Nginx 配置，测试覆盖：
+
+- HTTPS server 必须包含六类安全响应头及关键 CSP 指令。
+- HSTS 只能出现在 HTTPS server，不能出现在明文 HTTP server。
+- HTTP 必须跳转到规范 HTTPS 域名。
+
+### 上线前验证结果
+
+- 全部后端与配置测试：44 项通过，3 项在线 AI 测试按设计排除。
+- 前端 ESLint：通过。
+- 前端 TypeScript 与 Vite 生产构建：通过，241 个模块完成转换。
+- `logs/qa.log` 仍为本地运行日志，不进入提交。
+
+### 发布与回滚计划
+
+提交并推送 `main` 后，把版本库中的站点配置复制到服务器临时路径，先执行 Nginx 配置校验；只有校验通过才覆盖正式配置并平滑重载。发布后分别检查首页、静态资源、API 响应、HTTP 跳转和 CSP 下的关键业务接口。
+
+正式配置覆盖前保留带时间戳备份。若响应头或页面功能异常，恢复备份、再次校验并重载 Nginx；本轮不重建 Docker 服务，也不修改证书、环境变量或向量库。
